@@ -1,0 +1,15 @@
+span#center.glyphicon {
+  margin:auto;
+  margin-top: -190px;
+  margin-bottom: 190px;
+  display: block;
+  text-align: center;
+}
+
+
+
+div#googleMap {
+  display: block;
+  margin: auto;
+  align-items: center;
+}

@@ -6,10 +6,27 @@ span#center.glyphicon {
   text-align: center;
 }
 
-
+button.btn {
+  display: block;
+  margin: auto;
+  align-items: center;
+  width: 132px;
+}
 
 div#googleMap {
   display: block;
   margin: auto;
   align-items: center;
+  
 }
+
+/*div.brandCover {
+  background-color: white;
+  width: 500px;
+  height: 30px;
+  display: block;
+  margin: auto;
+  margin-top: -37px;
+  margin-bottom: 35px;
+  z-index: 1;
+}*/

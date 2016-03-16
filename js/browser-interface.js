@@ -150,7 +150,6 @@ $(function() {
     var city = cityArray[index];
     google.maps.event.addDomListener(window, 'load', initialize(styleArray, currentLatitude, currentLongitude));
     map = initialize(styleArray, currentLatitude, currentLongitude);
-
   });
   $('#waterLabels').click(function() {
     var id = styleArray.findIndex(findWater);

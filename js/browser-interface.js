@@ -1,6 +1,22 @@
 var initialize = require("./../js/map.js").initialize;
 var apiKey = require("./../.env").apiKey;
 
+var cityArray = [
+  {
+    cityName: "London",
+    lat: 51.508742,
+    long: -0.120850
+  },{
+    cityName: "Portland",
+    lat: 45.525319,
+    long: -122.658549
+  },{
+    cityName: "New York",
+    lat: 40.736198,
+    long: -73.965213
+  },
+];
+
 var styleArray = [
   {
     featureType: "all",
@@ -37,6 +53,12 @@ var styleArray = [
     stylers: [
       { visibility: "off" }
     ]
+  },{
+    featureType: "transit",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
   }
 ];
 
@@ -62,26 +84,33 @@ $(function() {
   s.src="http://maps.googleapis.com/maps/api/js?key=" + apiKey;
   $("head").prepend(s);
   setTimeout(function() {
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray));
-  }, 100);
+    var index = Math.floor(Math.random() * 3);
+    console.log(index);
+    var city = cityArray[index];
+    var latitude = city.lat;
+    var longitude = city.long;
+    google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
+  }, 200);
+
+
   $('#cityLabels').click(function() {
     var id = styleArray.findIndex(findCities);
     styleArray.splice(id, 1);
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray));
+    google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
   });
   $('#waterLabels').click(function() {
     var id = styleArray.findIndex(findWater);
     styleArray.splice(id, 1);
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray));
+    google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
   });
   $('#attractionLabels').click(function() {
     var id = styleArray.findIndex(findAttractions);
     styleArray.splice(id, 1);
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray));
+    google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
   });
   $('#roadLabels').click(function() {
     var id = styleArray.findIndex(findRoads);
     styleArray.splice(id, 1);
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray));
+    google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
   });
 });

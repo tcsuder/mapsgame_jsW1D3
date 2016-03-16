@@ -1,6 +1,6 @@
-exports.initialize = function(styleArray) {
+exports.initialize = function(styleArray, latitude, longitude) {
   var mapProp = {
-    center:new google.maps.LatLng(51.508742,-0.120850),
+    center:new google.maps.LatLng(latitude,longitude),
     zoom:13,
     mapTypeControl: false,
     styles: styleArray,

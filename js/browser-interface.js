@@ -1,4 +1,5 @@
 var initialize = require("./../js/map.js").initialize;
+var apiKey = require("./../.env").apiKey;
 
 var styleArray = [
   {
@@ -56,7 +57,13 @@ function findRoads(road) {
 }
 
 $(function() {
-  google.maps.event.addDomListener(window, 'load', initialize(styleArray));
+  var s = document.createElement("script");
+  s.type="text/javascript";
+  s.src="http://maps.googleapis.com/maps/api/js?key=" + apiKey;
+  $("head").prepend(s);
+  setTimeout(function() {
+    google.maps.event.addDomListener(window, 'load', initialize(styleArray));
+  }, 100);
   $('#cityLabels').click(function() {
     var id = styleArray.findIndex(findCities);
     styleArray.splice(id, 1);

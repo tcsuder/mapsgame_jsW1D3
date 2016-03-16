@@ -83,34 +83,52 @@ $(function() {
   s.type="text/javascript";
   s.src="http://maps.googleapis.com/maps/api/js?key=" + apiKey;
   $("head").prepend(s);
+  var index = Math.floor(Math.random() * 3);
   setTimeout(function() {
-    var index = Math.floor(Math.random() * 3);
     console.log(index);
     var city = cityArray[index];
     var latitude = city.lat;
     var longitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
+    var map = initialize(styleArray, latitude, longitude);
   }, 200);
 
 
   $('#cityLabels').click(function() {
     var id = styleArray.findIndex(findCities);
     styleArray.splice(id, 1);
+    var city = cityArray[index];
+    var latitude = city.lat;
+    var longitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
+    var map = initialize(styleArray, latitude, longitude);
+    console.log(map);
   });
   $('#waterLabels').click(function() {
     var id = styleArray.findIndex(findWater);
     styleArray.splice(id, 1);
+    var city = cityArray[index];
+    var latitude = city.lat;
+    var longitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
+    var map = initialize(styleArray, latitude, longitude);
   });
   $('#attractionLabels').click(function() {
     var id = styleArray.findIndex(findAttractions);
     styleArray.splice(id, 1);
+    var city = cityArray[index];
+    var latitude = city.lat;
+    var longitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
+    var map = initialize(styleArray, latitude, longitude);
   });
   $('#roadLabels').click(function() {
     var id = styleArray.findIndex(findRoads);
     styleArray.splice(id, 1);
+    var city = cityArray[index];
+    var latitude = city.lat;
+    var longitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(styleArray, latitude, longitude));
+    var map = initialize(styleArray, latitude, longitude);
   });
 });

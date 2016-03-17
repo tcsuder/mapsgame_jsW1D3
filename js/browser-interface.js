@@ -6,6 +6,7 @@ var apiKey = require("./../.env").apiKey;
 var calculateDistance = require("./../js/calculate-distance.js").calculateDistance;
 var createCircle = require('./../js/create-circle.js').createCircle;
 var limitZoom = require('./../js/limit-zoom.js').limitZoom;
+var trackZoom = require('./../js/track-zoom.js').trackZoom;
 
 var cityArray = [
   {
@@ -165,6 +166,7 @@ $(function() {
   var maxDistance = 4000;
   var minZoomLevel = 12;
   var zoom = 14;
+  var maxZoom = 14;
   var points = 1000;
   var totalScore = 0;
   var localStyleArray = [];
@@ -184,42 +186,51 @@ $(function() {
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, centerLatitude, centerLongitude, zoom));
     map = initialize(localStyleArray, centerLatitude, centerLongitude, zoom);
 
+
     // LIMIT ZOOM
     limitZoom(map, minZoomLevel);
 
+    // TRACK ZOOM TO DECRIMENT POINTS
+    trackZoom(map, maxZoom, points);
+
     // CREATE CIRCLE FOR DANGER ZONE
     createCircle(map, centerLatitude, centerLongitude);
+
   }, 300);
 
   //SHOW GUESS BUTTON
-  $('#guessBtn').show();
+  $('#guess').show();
 
   // CALCULATE DISTANCE FROM MAP-LOAD CENTER TO DECRIMENT GAME SCORE
   setInterval(function() {
-    decrimentTimer -= 5;
+    decrimentTimer -= 20;
     changeTimer = false;
     currentLatitude = map.getCenter().lat();
     currentLongitude = map.getCenter().lng();
     var distance = calculateDistance(centerLatitude, currentLatitude, centerLongitude, currentLongitude);
     var diffDistance = distance - maxDistance;
-    var decTime = 1000 - (diffDistance/4);
+    var decTime = 1000/(Math.pow(10, (diffDistance/2500)));
     if(decrimentTimer === 0) {
       decrimentTimer = 1000;
     }
     // console.log(distance);
 
     if(distance > maxDistance) {
-      if(decrimentTimer === 5) {
+      if(decrimentTimer === 20) {
         clearInterval(scoreTimer);
         scoreTimer = setInterval(function() {
-          console.log(distance);
           points--;
         }, decTime);
       }
     } else {
       clearInterval(scoreTimer);
     }
-  }, 5);
+    var newZoom = map.getZoom();
+    if (newZoom < maxZoom) {
+      maxZoom = newZoom;
+      points -= 50*(14-newZoom);
+    }
+  }, 20);
 
   // JQUERY TO SHOW MAP LABELS
   $('#cityLabels').click(function() {
@@ -233,6 +244,7 @@ $(function() {
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
     map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
     limitZoom(map, minZoomLevel);
+
     createCircle(map, centerLatitude, centerLongitude);
   });
   $('#waterLabels').click(function() {
@@ -246,6 +258,7 @@ $(function() {
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
     map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
     limitZoom(map, minZoomLevel);
+    trackZoom(map, maxZoom, points);
     createCircle(map, centerLatitude, centerLongitude);
   });
   $('#attractionLabels').click(function() {
@@ -259,6 +272,7 @@ $(function() {
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
     map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
     limitZoom(map, minZoomLevel);
+    trackZoom(map, maxZoom, points);
     createCircle(map, centerLatitude, centerLongitude);
   });
   $('#roadLabels').click(function() {
@@ -272,6 +286,7 @@ $(function() {
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
     map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
     limitZoom(map, minZoomLevel);
+    trackZoom(map, maxZoom, points);
     createCircle(map, centerLatitude, centerLongitude);
   });
 
@@ -286,13 +301,14 @@ $(function() {
     // debugger;
     var guess = $("#guessInput").val().toLowerCase();
     $('#result').show();
+    console.log(city.cityName);
     if (guess === city.cityName.toLowerCase()) {
       totalScore += points;
       $("#result").text("Right! Good Job!");
       playedCities.push(city);
       $("#totalScore").text(totalScore);
       $('#newRound').show();
-      $('#guessBtn').hide();
+      $('#guess').hide();
     } else {
       $("#result").text("wrong answer")
       points -= 100;
@@ -305,11 +321,12 @@ $(function() {
 
   $('#newRound').click(function() {
     points = 1000;
-    $('#guessBtn').show();
+    maxZoom = 14;
+    $('#guess').show();
     var newCity = false;
     var counter = 0;
     while(!newCity) {
-      var index = Math.floor(Math.random() * 15);
+      index = Math.floor(Math.random() * 15);
       city = cityArray[index];
       if (playedCities.indexOf(city) < 0) {
         console.log(city.cityName);
@@ -328,11 +345,8 @@ $(function() {
     centerLongitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, centerLatitude, centerLongitude, zoom));
     map = initialize(localStyleArray, centerLatitude, centerLongitude, zoom);
-
-    // LIMIT ZOOM
     limitZoom(map, minZoomLevel);
-
-    // CREATE CIRCLE FOR DANGER ZONE
+    trackZoom(map, maxZoom, points);
     createCircle(map, centerLatitude, centerLongitude);
     $('#newRound').hide();
   });

@@ -79,6 +79,12 @@ var styleArray = [
       { saturation: -80 }
     ]
   },{
+    featureType: "all",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
     featureType: "road",
     elementType: "labels",
     stylers: [
@@ -122,6 +128,18 @@ var styleArray = [
     ]
   },{
     featureType: "administrative.province",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative.land_parcel",
+    elementType: "labels",
+    stylers: [
+      { visibility: "off" }
+    ]
+  },{
+    featureType: "administrative.neighborhood",
     elementType: "labels",
     stylers: [
       { visibility: "off" }
@@ -180,7 +198,7 @@ $(function() {
     for(var i = 0; i<styleArray.length; i++) {
       localStyleArray.push(styleArray[i]);
     }
-    city = cityArray[index];
+    city = cityArray[10];
     centerLatitude = city.lat;
     centerLongitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, centerLatitude, centerLongitude, zoom));
@@ -237,8 +255,10 @@ $(function() {
     var zoom = map.getZoom();
     var id = localStyleArray.findIndex(findCities);
     if(id >= 0) {
-      localStyleArray.splice(id, 1);
-      points -= 1000;
+      if(localStyleArray[id].stylers[0].visibility !== "on") {
+        points -= 1000;
+        localStyleArray[id].stylers[0].visibility = "on";
+      }
     }
     city = cityArray[index];
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
@@ -251,8 +271,10 @@ $(function() {
     var zoom = map.getZoom();
     var id = localStyleArray.findIndex(findWater);
     if(id > 0) {
-      localStyleArray.splice(id, 1);
-      points -= 300;
+      if(localStyleArray[id].stylers[0].visibility !== "on") {
+        points -= 300;
+        localStyleArray[id].stylers[0].visibility = "on";
+      }
     }
     city = cityArray[index];
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
@@ -265,8 +287,10 @@ $(function() {
     var zoom = map.getZoom();
     var id = localStyleArray.findIndex(findAttractions);
     if(id > 0) {
-      localStyleArray.splice(id, 1);
-      points -=500;
+      if(localStyleArray[id].stylers[0].visibility !== "on") {
+        points -= 500;
+        localStyleArray[id].stylers[0].visibility = "on";
+      }
     }
     city = cityArray[index];
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
@@ -279,8 +303,10 @@ $(function() {
     var zoom = map.getZoom();
     var id = localStyleArray.findIndex(findRoads);
     if(id > 0) {
-      localStyleArray.splice(id, 1);
-      points -= 200;
+      if(localStyleArray[id].stylers[0].visibility !== "on") {
+        points -= 200;
+        localStyleArray[id].stylers[0].visibility = "on";
+      }
     }
     city = cityArray[index];
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));

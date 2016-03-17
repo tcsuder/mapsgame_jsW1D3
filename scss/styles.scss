@@ -1,12 +1,18 @@
-span#center.glyphicon {
+body {
+  background: green;
+}
+
+span#center {
+  font-weight: bolder;
   margin:auto;
   margin-top: -190px;
   margin-bottom: 190px;
   display: block;
   text-align: center;
+  z-index: 10;
 }
 
-button.btn {
+.btn {
   display: block;
   margin: auto;
   align-items: center;
@@ -17,16 +23,4 @@ div#googleMap {
   display: block;
   margin: auto;
   align-items: center;
-  
 }
-
-/*div.brandCover {
-  background-color: white;
-  width: 500px;
-  height: 30px;
-  display: block;
-  margin: auto;
-  margin-top: -37px;
-  margin-bottom: 35px;
-  z-index: 1;
-}*/

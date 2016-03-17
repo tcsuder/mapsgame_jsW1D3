@@ -1,7 +1,7 @@
 {
-  "name": "alarm-clock",
+  "name": "ping-pong",
   "description": "",
-  "main": "gulpfile.js",
+  "main": "index.js",
   "license": "ISC",
   "moduleType": [],
   "homepage": "",

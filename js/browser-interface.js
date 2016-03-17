@@ -1,5 +1,6 @@
 var initialize = require("./../js/map.js").initialize;
 var apiKey = require("./../.env").apiKey;
+var calculateDistance = require("./../js/calculate-distance.js").calculateDistance;
 
 var cityArray = [
   {
@@ -93,7 +94,7 @@ $(function() {
   var centerLongitude;
   var currentLatitude;
   var currentLongitude;
-  var maxDistance = .05;
+  var maxDistance = 4000;
   var index = Math.floor(Math.random() * 3);
   var minZoomLevel = 12;
 
@@ -122,7 +123,7 @@ $(function() {
 
     var circle = new google.maps.Circle({
       map: map,
-      radius: 4001,    // 10 miles in metres
+      radius: 4000,    // measured in metres
       strokeColor: '#E61515',
       fillOpacity: 0,
       strokeOpacity: 0.6,
@@ -135,9 +136,7 @@ $(function() {
   setInterval(function() {
     currentLatitude = map.getCenter().lat();
     currentLongitude = map.getCenter().lng();
-    var diffLat = Math.abs(currentLatitude-centerLatitude);
-    var diffLng = Math.abs(currentLongitude-centerLongitude);
-    var distance = Math.sqrt((diffLat*diffLat)+(diffLng*diffLng));
+    var distance = calculateDistance(centerLatitude, currentLatitude, centerLongitude, currentLongitude);
     if(distance > maxDistance) {
       console.log("decriment");
     }

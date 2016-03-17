@@ -12,7 +12,7 @@ span#center {
   z-index: 10;
 }
 
-.btn {
+.hintButton {
   display: block;
   margin: auto;
   align-items: center;
@@ -23,4 +23,17 @@ div#googleMap {
   display: block;
   margin: auto;
   align-items: center;
+}
+
+#result {
+  display: none;
+}
+
+#newRound {
+  display: none;
+  align-items: center;
+}
+
+#guessBtn {
+  display: none;
 }

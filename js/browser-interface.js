@@ -1,15 +1,11 @@
-// 1. Set up folder with sass
-// 2. glyphicon still not working without seperate bootstrap.css file
-// 3. set circles to appear on click... couldnt figure out how to call function rather than copy centerLongitude
-// 4. created zoom perameter to reload map at consistant zoom levels on button-press
-// 5. created extra cities - 15 total
-// 6. hid landscape and province tags
-// 7. zoom limit still disappears when working with buttons
+// 2. glyphicon still not working without seperate bootstrap.css file / do this later
 
 
 var initialize = require("./../js/map.js").initialize;
 var apiKey = require("./../.env").apiKey;
-
+var calculateDistance = require("./../js/calculate-distance.js").calculateDistance;
+var createCircle = require('./../js/create-circle.js').createCircle;
+var limitZoom = require('./../js/limit-zoom.js').limitZoom;
 
 var cityArray = [
   {
@@ -163,155 +159,181 @@ $(function() {
   var centerLongitude;
   var currentLatitude;
   var currentLongitude;
-  var maxDistance = 0.05;
-  var index = Math.floor(Math.random() * 14.9);
+  var index = Math.floor(Math.random() * 15);
+  var city;
+  var playedCities = [];
+  var maxDistance = 4000;
   var minZoomLevel = 12;
   var zoom = 14;
+  var points = 1000;
+  var totalScore = 0;
+  var localStyleArray = [];
+  var decrimentTimer = 1000;
+  var localTimer;
+  var changeTimer = false;
+  var scoreTimer;
 
   // WAIT FOR API TO LOAD THEN CREATE INITIAL MAP
   setTimeout(function() {
-    console.log(index);
-    var city = cityArray[index];
+    for(var i = 0; i<styleArray.length; i++) {
+      localStyleArray.push(styleArray[i]);
+    }
+    city = cityArray[index];
     centerLatitude = city.lat;
     centerLongitude = city.long;
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray, centerLatitude, centerLongitude, zoom));
-    map = initialize(styleArray, centerLatitude, centerLongitude, zoom);
+    google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, centerLatitude, centerLongitude, zoom));
+    map = initialize(localStyleArray, centerLatitude, centerLongitude, zoom);
 
     // LIMIT ZOOM
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-      if (map.getZoom() < minZoomLevel) map.setZoom(minZoomLevel);
-    });
+    limitZoom(map, minZoomLevel);
 
     // CREATE CIRCLE FOR DANGER ZONE
-    var marker = new google.maps.Marker({
-      map: map,
-      position: new google.maps.LatLng(centerLatitude, centerLongitude),
-      title: 'city.cityName'
-    });
-    marker.setVisible(false);
-    var circle = new google.maps.Circle({
-      map: map,
-      radius: 4001,    // 10 miles in metres
-      strokeColor: '#E61515',
-      fillOpacity: 0,
-      strokeOpacity: 0.6,
-      strokeWeight: 20
-    });
-    circle.bindTo('center', marker, 'position');
+    createCircle(map, centerLatitude, centerLongitude);
   }, 300);
 
+  //SHOW GUESS BUTTON
+  $('#guessBtn').show();
 
   // CALCULATE DISTANCE FROM MAP-LOAD CENTER TO DECRIMENT GAME SCORE
   setInterval(function() {
+    decrimentTimer -= 5;
+    changeTimer = false;
     currentLatitude = map.getCenter().lat();
     currentLongitude = map.getCenter().lng();
-    var diffLat = Math.abs(currentLatitude-centerLatitude);
-    var diffLng = Math.abs(currentLongitude-centerLongitude);
-    var distance = Math.sqrt((diffLat*diffLat)+(diffLng*diffLng));
-    if(distance > maxDistance) {
-      console.log("decriment");
+    var distance = calculateDistance(centerLatitude, currentLatitude, centerLongitude, currentLongitude);
+    var diffDistance = distance - maxDistance;
+    var decTime = 1000 - (diffDistance/4);
+    if(decrimentTimer === 0) {
+      decrimentTimer = 1000;
     }
-  }, 1000);
+    // console.log(distance);
+
+    if(distance > maxDistance) {
+      if(decrimentTimer === 5) {
+        clearInterval(scoreTimer);
+        scoreTimer = setInterval(function() {
+          console.log(distance);
+          points--;
+        }, decTime);
+      }
+    } else {
+      clearInterval(scoreTimer);
+    }
+  }, 5);
 
   // JQUERY TO SHOW MAP LABELS
   $('#cityLabels').click(function() {
     var zoom = map.getZoom();
-    var id = styleArray.findIndex(findCities);
-    styleArray.splice(id, 1);
-    var city = cityArray[index];
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray, currentLatitude, currentLongitude, zoom));
-    map = initialize(styleArray, currentLatitude, currentLongitude, zoom);
-
-    var marker = new google.maps.Marker({
-      map: map,
-      position: new google.maps.LatLng(centerLatitude, centerLongitude),
-      title: 'city.cityName'
-    });
-    marker.setVisible(false);
-    var circle = new google.maps.Circle({
-      map: map,
-      radius: 4001,    // 10 miles in metres
-      strokeColor: '#E61515',
-      fillOpacity: 0,
-      strokeOpacity: 0.6,
-      strokeWeight: 20
-    });
-    circle.bindTo('center', marker, 'position');
-
+    var id = localStyleArray.findIndex(findCities);
+    if(id >= 0) {
+      localStyleArray.splice(id, 1);
+      points -= 1000;
+    }
+    city = cityArray[index];
+    google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
+    map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
+    limitZoom(map, minZoomLevel);
+    createCircle(map, centerLatitude, centerLongitude);
   });
   $('#waterLabels').click(function() {
     var zoom = map.getZoom();
-    var id = styleArray.findIndex(findWater);
-    styleArray.splice(id, 1);
-    var city = cityArray[index];
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray, currentLatitude, currentLongitude, zoom));
-    map = initialize(styleArray, currentLatitude, currentLongitude, zoom);
-
-    var marker = new google.maps.Marker({
-      map: map,
-      position: new google.maps.LatLng(centerLatitude, centerLongitude),
-      title: 'city.cityName'
-    });
-    marker.setVisible(false);
-    var circle = new google.maps.Circle({
-      map: map,
-      radius: 4001,    // 10 miles in metres
-      strokeColor: '#E61515',
-      fillOpacity: 0,
-      strokeOpacity: 0.6,
-      strokeWeight: 20
-    });
-    circle.bindTo('center', marker, 'position');
-
+    var id = localStyleArray.findIndex(findWater);
+    if(id > 0) {
+      localStyleArray.splice(id, 1);
+      points -= 300;
+    }
+    city = cityArray[index];
+    google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
+    map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
+    limitZoom(map, minZoomLevel);
+    createCircle(map, centerLatitude, centerLongitude);
   });
   $('#attractionLabels').click(function() {
     var zoom = map.getZoom();
-    var id = styleArray.findIndex(findAttractions);
-    styleArray.splice(id, 1);
-    var city = cityArray[index];
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray, currentLatitude, currentLongitude, zoom));
-    map = initialize(styleArray, currentLatitude, currentLongitude, zoom);
-
-    var marker = new google.maps.Marker({
-      map: map,
-      position: new google.maps.LatLng(centerLatitude, centerLongitude),
-      title: 'city.cityName'
-    });
-    marker.setVisible(false);
-    var circle = new google.maps.Circle({
-      map: map,
-      radius: 4001,    // 10 miles in metres
-      strokeColor: '#E61515',
-      fillOpacity: 0,
-      strokeOpacity: 0.6,
-      strokeWeight: 20
-    });
-    circle.bindTo('center', marker, 'position');
-
+    var id = localStyleArray.findIndex(findAttractions);
+    if(id > 0) {
+      localStyleArray.splice(id, 1);
+      points -=500;
+    }
+    city = cityArray[index];
+    google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
+    map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
+    limitZoom(map, minZoomLevel);
+    createCircle(map, centerLatitude, centerLongitude);
   });
   $('#roadLabels').click(function() {
     var zoom = map.getZoom();
-    var id = styleArray.findIndex(findRoads);
-    styleArray.splice(id, 1);
-    var city = cityArray[index];
-    google.maps.event.addDomListener(window, 'load', initialize(styleArray, currentLatitude, currentLongitude, zoom));
-    map = initialize(styleArray, currentLatitude, currentLongitude, zoom);
+    var id = localStyleArray.findIndex(findRoads);
+    if(id > 0) {
+      localStyleArray.splice(id, 1);
+      points -= 200;
+    }
+    city = cityArray[index];
+    google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, currentLatitude, currentLongitude, zoom));
+    map = initialize(localStyleArray, currentLatitude, currentLongitude, zoom);
+    limitZoom(map, minZoomLevel);
+    createCircle(map, centerLatitude, centerLongitude);
+  });
 
-    var marker = new google.maps.Marker({
-      map: map,
-      position: new google.maps.LatLng(centerLatitude, centerLongitude),
-      title: 'city.cityName'
-    });
-    marker.setVisible(false);
-    var circle = new google.maps.Circle({
-      map: map,
-      radius: 4001,    // 10 miles in metres
-      strokeColor: '#E61515',
-      fillOpacity: 0,
-      strokeOpacity: 0.6,
-      strokeWeight: 20
-    });
-    circle.bindTo('center', marker, 'position');
+  // GAME FUNCTIONALITY
 
+  setInterval(function() {
+    $("#points").text(points);
+  }, 5)
+
+  $("#guess").submit(function(event) {
+    event.preventDefault()
+    // debugger;
+    var guess = $("#guessInput").val().toLowerCase();
+    $('#result').show();
+    if (guess === city.cityName.toLowerCase()) {
+      totalScore += points;
+      $("#result").text("Right! Good Job!");
+      playedCities.push(city);
+      $("#totalScore").text(totalScore);
+      $('#newRound').show();
+      $('#guessBtn').hide();
+    } else {
+      $("#result").text("wrong answer")
+      points -= 100;
+    }
+    setTimeout(function() {
+      $("#result").hide();
+    }, 2000);
+    $("#guessInput").val("");
+  });
+
+  $('#newRound').click(function() {
+    points = 1000;
+    $('#guessBtn').show();
+    var newCity = false;
+    var counter = 0;
+    while(!newCity) {
+      var index = Math.floor(Math.random() * 15);
+      city = cityArray[index];
+      if (playedCities.indexOf(city) < 0) {
+        console.log(city.cityName);
+        newCity = true;
+      }
+      counter++;
+      if(counter > 1000) {
+        break;
+      }
+    }
+    localStyleArray = [];
+    for(var i = 0; i<styleArray.length; i++) {
+      localStyleArray.push(styleArray[i]);
+    }
+    centerLatitude = city.lat;
+    centerLongitude = city.long;
+    google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, centerLatitude, centerLongitude, zoom));
+    map = initialize(localStyleArray, centerLatitude, centerLongitude, zoom);
+
+    // LIMIT ZOOM
+    limitZoom(map, minZoomLevel);
+
+    // CREATE CIRCLE FOR DANGER ZONE
+    createCircle(map, centerLatitude, centerLongitude);
+    $('#newRound').hide();
   });
 });

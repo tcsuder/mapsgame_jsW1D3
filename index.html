@@ -5,66 +5,71 @@
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="build/css/styles.css">
     <script src="build/js/vendor.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <script type="text/javascript" src="build/js/app.js"></script>
     <title>MapsGuess</title>
   </head>
   <body>
-    <div class="mapBox">
-      <div id="googleMap" style="width:500px;height:380px;"></div>
-      <span id="center" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-    </div>
-    <div class="row buttons">
-      <div class="col col-sm-2">
-
+    <header>
+      <div class="container">
+        <h1>Where the hell am I?</h1>
       </div>
-      <div class="col col-sm-2">
-
-        <button id="cityLabels" type="button" class="btn btn-primary hintButton">Add City Labels</button>
+    </header>
+    <div class="row">
+      <div class="flankLeft col-sm-3">
+        <h1>Current Points:</h1>
+        <h3 id="points"></h3>
+        <hr>
+        <h1>Total Score:</h1>
+        <h3 id="totalScore"></h3>
       </div>
-      <div class="col col-sm-2">
-
-        <button id="attractionLabels" type="button" class="btn btn-primary hintButton">Add POI Labels</button>
-      </div>
-      <div class="col col-sm-2">
-
-        <button id="waterLabels" type="button" class="btn btn-primary hintButton">Add Water Labels</button>
-      </div>
-      <div class="col col-sm-2">
-
-        <button id="roadLabels" type="button" class="btn btn-primary hintButton">Add Road Labels</button>
-      </div>
-      <div class="col col-sm-2">
-
-     </div>
-    </div>
-    <hr>
-    <div class="game">
-      <div class="row">
-        <div class="col col-sm-4">
-          <h1>Current Points:</h1>
-          <h3 id="points"></h3>
-        </div>
-        <div class="col col-sm-4">
-          <h3 id="result"></h3>
-        </div>
-        <div class="col col-sm-4">
-          <h1>Total Score:</h1>
-          <h3 id="totalScore"></h3>
+      <div class="col-sm-6">
+        <div class="mapBox">
+          <div id="googleMap" ></div>
+          <span id="center" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
         </div>
       </div>
-    </div>
-    <form id="guess">
-      <div class="row">
-        <div class="col col-sm-4">
-          <label for="guessInput">Which City is This?</label>
+      <div class="flankRight col-sm-3">
+        <form id="guess">
+          <h1>Which City is This?</h1>
           <input class="form-control" id="guessInput" type="text" name="guess">
           <button class="btn btn-warning" type="submit" name="button" id="guessBtn">guess</button>
-        </div>
+        </form>
+        <button class="btn btn-info" type="button" id="newRound">Play a New Round</button>
+        <hr>
+        <h3 id="result"></h3>
       </div>
-    </form>
-    <button class="btn btn-info" type="button" id="newRound">Play a New Round</button>
-    <div id="test">
+    </div>
+    <div class="hints">
+      <div class="container">
+        <div class="row">
+          <h1>Get hints by showing labels... at a cost!!!!!! </h1>
+        </div>
+        <div class="row buttons">
+          <div class="col col-sm-2">
 
+          </div>
+          <div class="col col-sm-2">
+
+            <button id="cityLabels" type="button" class="btn btn-primary hintButton">City</button>
+          </div>
+          <div class="col col-sm-2">
+
+            <button id="attractionLabels" type="button" class="btn btn-primary hintButton">Point of Interest</button>
+          </div>
+          <div class="col col-sm-2">
+
+            <button id="waterLabels" type="button" class="btn btn-primary hintButton">Water</button>
+          </div>
+          <div class="col col-sm-2">
+
+            <button id="roadLabels" type="button" class="btn btn-primary hintButton">Roads</button>
+          </div>
+          <div class="col col-sm-2">
+
+          </div>
+      </div>
+      </div>
     </div>
   </body>
 </html>

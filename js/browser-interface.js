@@ -198,7 +198,7 @@ $(function() {
     for(var i = 0; i<styleArray.length; i++) {
       localStyleArray.push(styleArray[i]);
     }
-    city = cityArray[10];
+    city = cityArray[index];
     centerLatitude = city.lat;
     centerLongitude = city.long;
     google.maps.event.addDomListener(window, 'load', initialize(localStyleArray, centerLatitude, centerLongitude, zoom));

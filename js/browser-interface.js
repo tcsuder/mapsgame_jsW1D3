@@ -103,13 +103,13 @@ var styleArray = [
       { visibility: "off" }
     ]
   },{
-    featureType: "administrative.neighborhood",
+    featureType: "administrative.locality",
     elementType: "labels",
     stylers: [
       { visibility: "off" }
     ]
   },{
-    featureType: "administrative.locality",
+    featureType: "administrative.neighborhood",
     elementType: "labels",
     stylers: [
       { visibility: "off" }
@@ -363,9 +363,10 @@ $(function() {
         break;
       }
     }
-    localStyleArray = [];
-    for(var i = 0; i<styleArray.length; i++) {
-      localStyleArray.push(styleArray[i]);
+    for(var i = 2; i<6; i++) {
+      if(localStyleArray[i].stylers[0].visibility !== "off") {
+        localStyleArray[i].stylers[0].visibility = "off";
+      }
     }
     centerLatitude = city.lat;
     centerLongitude = city.long;
